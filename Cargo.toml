@@ -1,10 +1,13 @@
 [package]
 name = "log4rs-routing-appender"
-version = "0.4.0"
-authors = ["Steven Fackler <sfackler@gmail.com>"]
+version = "0.5.0"
+authors = ["Steven Fackler <sfackler@gmail.com>", "Peter Hambly <peter.hambly@syrinix.com>"]
+edition = "2015" # Rust edition, not Mission control! Needs to be upped to 2021
 description = "A routing appender for log4rs"
 license = "MIT/Apache-2.0"
-repository = "https://github.com/sfackler/log4rs-routing-appender"
+repository = "https://github.com/syrinix-org/log4rs-routing-appender"
+# Fork of:
+# repository = "https://github.com/sfackler/log4rs-routing-appender"
 readme = "README.md"
 
 [features]
