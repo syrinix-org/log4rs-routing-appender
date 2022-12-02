@@ -89,7 +89,7 @@ impl<'a> Entry<'a> {
     /// entry is not present in the cache.
     pub fn or_insert_with<F>(self, f: F) -> Appender
     where
-        F: FnOnce() -> Box<Append>,
+        F: FnOnce() -> Box<dyn Append>,
     {
         match self {
             Entry::Occupied(e) => e.into_value(),
@@ -117,7 +117,7 @@ pub struct VacantEntry<'a> {
 
 impl<'a> VacantEntry<'a> {
     /// Inserts an appender into the cache, returning the wrapped version of it.
-    pub fn insert(self, value: Box<Append>) -> Appender {
+    pub fn insert(self, value: Box<dyn Append>) -> Appender {
         let appender = Arc::new(value);
         let tracked = TrackedAppender {
             appender: Appender(appender.clone()),
@@ -129,10 +129,10 @@ impl<'a> VacantEntry<'a> {
 }
 
 /// An opaque, wrapped appender stored by the `Cache`.
-pub struct Appender(Arc<Box<Append>>);
+pub struct Appender(Arc<Box<dyn Append>>);
 
 impl AppenderInner for Appender {
-    fn appender(&self) -> &Append {
+    fn appender(&self) -> &dyn Append {
         &**self.0
     }
 }
@@ -144,11 +144,11 @@ pub trait Route: fmt::Debug + 'static + Sync + Send {
         &self,
         record: &Record,
         cache: &mut Cache,
-    ) -> Result<Appender, Box<Error + Sync + Send>>;
+    ) -> Result<Appender, Box<dyn Error + Sync + Send>>;
 }
 
 #[cfg(feature = "file")]
-impl Deserializable for Route {
+impl Deserializable for dyn Route {
     fn name() -> &'static str {
         "router"
     }

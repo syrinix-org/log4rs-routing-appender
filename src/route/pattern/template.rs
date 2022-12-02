@@ -14,7 +14,7 @@ pub struct Template {
 }
 
 impl Template {
-    pub fn new(pattern: &Value) -> Result<Template, Box<Error + Sync + Send>> {
+    pub fn new(pattern: &Value) -> Result<Template, Box<dyn Error + Sync + Send>> {
         let value = ValueTemplate::new(pattern)?;
         let mut keys = HashSet::new();
         value.keys(&mut keys);
@@ -35,7 +35,7 @@ impl Template {
         s
     }
 
-    pub fn expand(&self) -> Result<Value, Box<Error + Sync + Send>> {
+    pub fn expand(&self) -> Result<Value, Box<dyn Error + Sync + Send>> {
         self.value.expand()
     }
 }
@@ -140,7 +140,7 @@ impl Ord for ValueTemplate {
 }
 
 impl ValueTemplate {
-    fn new(value: &Value) -> Result<ValueTemplate, Box<Error + Sync + Send>> {
+    fn new(value: &Value) -> Result<ValueTemplate, Box<dyn Error + Sync + Send>> {
         let value = match *value {
             Value::Map(ref m) => {
                 let mut m2 = BTreeMap::new();
@@ -259,7 +259,7 @@ impl ValueTemplate {
         }
     }
 
-    fn expand(&self) -> Result<Value, Box<Error + Sync + Send>> {
+    fn expand(&self) -> Result<Value, Box<dyn Error + Sync + Send>> {
         let v = match *self {
             ValueTemplate::Map(ref m) => {
                 let mut m2 = BTreeMap::new();

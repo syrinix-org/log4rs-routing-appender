@@ -110,7 +110,7 @@ pub fn register(d: &mut Deserializers) {
 
 /// An appender which routes log events to dynamically constructed sub-appenders.
 pub struct RoutingAppender {
-    router: Box<Route>,
+    router: Box<dyn Route>,
     cache: Mutex<Cache>,
 }
 
@@ -123,7 +123,7 @@ impl fmt::Debug for RoutingAppender {
 }
 
 impl Append for RoutingAppender {
-    fn append(&self, record: &Record) -> Result<(), Box<Error + Sync + Send>> {
+    fn append(&self, record: &Record) -> Result<(), Box<dyn Error + Sync + Send>> {
         let appender = self.router.route(record, &mut self.cache.lock())?;
         appender.appender().append(record)
     }
@@ -156,7 +156,7 @@ impl RoutingAppenderBuilder {
     }
 
     /// Consumes the builder, producing a `RoutingAppender`.
-    pub fn build(self, router: Box<Route>) -> RoutingAppender {
+    pub fn build(self, router: Box<dyn Route>) -> RoutingAppender {
         RoutingAppender {
             router: router,
             cache: Mutex::new(Cache::new(self.idle_timeout)),
@@ -191,14 +191,14 @@ pub struct RoutingAppenderDeserializer;
 
 #[cfg(feature = "file")]
 impl Deserialize for RoutingAppenderDeserializer {
-    type Trait = Append;
+    type Trait = dyn Append;
     type Config = RoutingAppenderConfig;
 
     fn deserialize(
         &self,
         config: RoutingAppenderConfig,
         deserializers: &Deserializers,
-    ) -> Result<Box<Append>, Box<Error + Sync + Send>> {
+    ) -> Result<Box<dyn Append>, Box<dyn Error + Sync + Send>> {
         let mut builder = RoutingAppender::builder();
         if let Some(idle_timeout) = config.cache.idle_timeout {
             builder = builder.idle_timeout(idle_timeout);
@@ -278,5 +278,5 @@ trait CacheInner {
 }
 
 trait AppenderInner {
-    fn appender(&self) -> &Append;
+    fn appender(&self) -> &dyn Append;
 }

@@ -69,7 +69,7 @@ impl fmt::Debug for PatternRouter {
 }
 
 impl Route for PatternRouter {
-    fn route(&self, _: &Record, cache: &mut Cache) -> Result<Appender, Box<Error + Sync + Send>> {
+    fn route(&self, _: &Record, cache: &mut Cache) -> Result<Appender, Box<dyn Error + Sync + Send>> {
         match cache.entry(self.config.key()) {
             Entry::Occupied(e) => Ok(e.into_value()),
             Entry::Vacant(e) => {
@@ -96,14 +96,14 @@ impl Route for PatternRouter {
 pub struct PatternRouterDeserializer;
 
 impl Deserialize for PatternRouterDeserializer {
-    type Trait = Route;
+    type Trait = dyn Route;
     type Config = PatternRouterConfig;
 
     fn deserialize(
         &self,
         config: PatternRouterConfig,
         deserializers: &Deserializers,
-    ) -> Result<Box<Route>, Box<Error + Sync + Send>> {
+    ) -> Result<Box<dyn Route>, Box<dyn Error + Sync + Send>> {
         Ok(Box::new(PatternRouter {
             deserializers: deserializers.clone(),
             kind: config.pattern.kind,
