@@ -98,6 +98,7 @@ impl<'a> Entry<'a> {
     }
 }
 
+#[allow(dead_code)]
 /// An entry which exists in the cache.
 pub struct OccupiedEntry<'a>(&'a mut Cache, Appender);
 
